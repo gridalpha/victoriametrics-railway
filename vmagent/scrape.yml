@@ -34,8 +34,10 @@ scrape_configs:
     static_configs:
       - targets: ["%{ALERTMANAGER_HOST}:9093"]
 
-  # vmauth is the public listener, so its /metrics is behind -metricsAuthKey.
+  # vmauth is the public listener, so its /metrics is behind -metricsAuthKey,
+  # which reads the key from the authKey query arg rather than a bearer token.
   - job_name: vmauth
-    bearer_token: "%{VMAUTH_METRICS_KEY}"
+    params:
+      authKey: ["%{VMAUTH_METRICS_KEY}"]
     static_configs:
       - targets: ["%{VMAUTH_HOST}:8427"]

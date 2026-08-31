@@ -17,6 +17,7 @@ export VMSTORAGE_HOST VMINSERT_HOST VMSELECT_HOST VMALERT_HOST VMAUTH_HOST \
   ALERTMANAGER_HOST VMAUTH_METRICS_KEY
 
 exec /vmagent-prod \
+  -enableTCP6 \
   -promscrape.config=/etc/vmagent/scrape.yml \
   -remoteWrite.url="http://$VMINSERT_HOST:8480/insert/0/prometheus/api/v1/write" \
   -remoteWrite.tmpDataPath=/vmagentdata \

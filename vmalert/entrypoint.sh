@@ -13,6 +13,7 @@ case "${VMINSERT_HOST:-}" in "" | :*) VMINSERT_HOST=vminsert.railway.internal ;;
 case "${ALERTMANAGER_HOST:-}" in "" | :*) ALERTMANAGER_HOST=alertmanager.railway.internal ;; esac
 
 set -- \
+  -enableTCP6 \
   -rule="/etc/alerts/*.yml" \
   -datasource.url="http://$VMSELECT_HOST:8481/select/0/prometheus" \
   -remoteRead.url="http://$VMSELECT_HOST:8481/select/0/prometheus" \

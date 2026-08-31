@@ -22,6 +22,7 @@ export VM_USERNAME VM_PASSWORD VMSELECT_HOST VMINSERT_HOST
 AUTHKEY="${VM_INTERNAL_AUTH_KEY:-$VM_PASSWORD}"
 
 exec /vmauth-prod \
+  -enableTCP6 \
   -auth.config=/etc/vmauth/auth.yml \
   -httpListenAddr=":$PORT" \
   -metricsAuthKey="$AUTHKEY" \
