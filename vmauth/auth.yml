@@ -26,9 +26,14 @@ users:
           - "/api/v1/.*"
         url_prefix: "http://%{VMSELECT_HOST}:8481/select/0/prometheus"
 
-      # The root path opens vmui for tenant 0. Its assets live under /select/...,
-      # which the first url_map entry already routes. vmauth normalises "/" to an
-      # empty path before matching, so the pattern has to accept both.
+      # The root path opens vmui for tenant 0. vmauth normalises "/" to an empty
+      # path before matching, so the pattern has to accept both.
       - src_paths:
           - "/?"
         url_prefix: "http://%{VMSELECT_HOST}:8481/select/0/vmui"
+
+      # vmselect answers that with a redirect to /vmui/, which is relative to its
+      # own root and so has lost the tenant prefix - put it back here.
+      - src_paths:
+          - "/vmui.*"
+        url_prefix: "http://%{VMSELECT_HOST}:8481/select/0"
