@@ -1,0 +1,33 @@
+# vmauth is the only publicly reachable service in this deployment. Every request
+# is authenticated here and then routed to the private cluster components.
+# https://docs.victoriametrics.com/victoriametrics/vmauth/
+#
+# %{ENV_VAR} placeholders are substituted by vmauth from the process environment.
+
+users:
+  - username: "%{VM_USERNAME}"
+    password: "%{VM_PASSWORD}"
+    url_map:
+      # Tenant-scoped read paths: query API, /select/<accountID>/vmui, exports.
+      - src_paths:
+          - "/select/.*"
+          - "/admin/.*"
+        url_prefix: "http://%{VMSELECT_HOST}:8481"
+
+      # Tenant-scoped write paths: Prometheus remote_write, Influx, Graphite,
+      # OpenTSDB, CSV and JSON import.
+      - src_paths:
+          - "/insert/.*"
+        url_prefix: "http://%{VMINSERT_HOST}:8480"
+
+      # Convenience: the bare domain is a valid Prometheus-API datasource URL for
+      # tenant 0, so Grafana can be pointed at https://<domain> directly.
+      - src_paths:
+          - "/api/v1/.*"
+        url_prefix: "http://%{VMSELECT_HOST}:8481/select/0/prometheus"
+
+      # The root path opens vmui for tenant 0. Its assets live under /select/...,
+      # which the first url_map entry already routes.
+      - src_paths:
+          - "/"
+        url_prefix: "http://%{VMSELECT_HOST}:8481/select/0/vmui"

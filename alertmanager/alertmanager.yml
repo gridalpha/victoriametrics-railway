@@ -1,0 +1,11 @@
+# Default configuration: alerts are received and grouped but not delivered
+# anywhere. Set ALERT_WEBHOOK_URL to deliver them instead.
+route:
+  receiver: blackhole
+  group_by: ["alertname", "job"]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 3h
+
+receivers:
+  - name: blackhole

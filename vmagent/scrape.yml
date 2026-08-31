@@ -1,0 +1,41 @@
+# Self-monitoring for the cluster. Every component exposes Prometheus metrics on
+# its own HTTP port; vmagent scrapes them and writes them back into the cluster
+# through vminsert, so the deployment monitors itself out of the box.
+#
+# %{ENV_VAR} placeholders are substituted by vmagent from the process environment.
+
+global:
+  scrape_interval: 30s
+  external_labels:
+    cluster: victoriametrics
+
+scrape_configs:
+  - job_name: vmagent
+    static_configs:
+      - targets: ["127.0.0.1:8429"]
+
+  - job_name: vmstorage
+    static_configs:
+      - targets: ["%{VMSTORAGE_HOST}:8482"]
+
+  - job_name: vminsert
+    static_configs:
+      - targets: ["%{VMINSERT_HOST}:8480"]
+
+  - job_name: vmselect
+    static_configs:
+      - targets: ["%{VMSELECT_HOST}:8481"]
+
+  - job_name: vmalert
+    static_configs:
+      - targets: ["%{VMALERT_HOST}:8880"]
+
+  - job_name: alertmanager
+    static_configs:
+      - targets: ["%{ALERTMANAGER_HOST}:9093"]
+
+  # vmauth is the public listener, so its /metrics is behind -metricsAuthKey.
+  - job_name: vmauth
+    bearer_token: "%{VMAUTH_METRICS_KEY}"
+    static_configs:
+      - targets: ["%{VMAUTH_HOST}:8427"]
